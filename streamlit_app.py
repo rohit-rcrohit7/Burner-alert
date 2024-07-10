@@ -111,6 +111,7 @@ st.markdown("""
     .yellow-alert {
         border: 2px solid orange;
         color: orange;
+        colour: black;
     }
     .red-alert {
         border: 2px solid red;
