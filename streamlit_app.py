@@ -1,9 +1,19 @@
 import streamlit as st 
 import requests
+import os
 
 # Hardcoded API key (replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key)
 os.environ['API_KEY'] = st.secrets['API_KEY']
+API_KEY = os.getenv('API_KEY')
 
+# List of Swansea postcodes
+swansea_postcodes = [
+    'SA1', 'SA2', 'SA3', 'SA4', 'SA5', 'SA6', 'SA7', 'SA8', 'SA9',
+    'SA18', 'SA19', 'SA20', 'SA31', 'SA32', 'SA33', 'SA34', 'SA35', 'SA36',
+    'SA37', 'SA38', 'SA39', 'SA40', 'SA41', 'SA42', 'SA43', 'SA44', 'SA45',
+    'SA46', 'SA47', 'SA48', 'SA61', 'SA62', 'SA63', 'SA64', 'SA65', 'SA66',
+    'SA67', 'SA68', 'SA69', 'SA70', 'SA71', 'SA72', 'SA73'
+]
 
 # Function to standardize the postcode
 def standardize_postcode(postcode):
@@ -54,7 +64,7 @@ st.markdown("""
         text-align: center;
         color: white;
         background-color: red;
-        border: 5px solid green;
+                border: 5px solid green; 
         border-radius: 10px;
         padding: 10px;
     }
@@ -79,15 +89,15 @@ st.markdown("""
     }
     .result-yellow {
         border-color: orange;
-        color: orange;
+        color: orange.
     }
     .result-red {
         border-color: red;
-        color: red;
+        color: red.
     }
     .result-gray {
         border-color: gray;
-        color: gray;
+        color: gray.
     }
     .alert-box {
         text-align: center;
@@ -104,11 +114,11 @@ st.markdown("""
     }
     .red-alert {
         border: 2px solid red;
-        color: red;
+        color: red.
     }
     .gray-alert {
         border: 2px solid gray;
-        color: gray;
+        color: gray.
     }
     .instructions {
         text-align: center;
@@ -128,7 +138,7 @@ st.markdown("""
 
 # Streamlit app title
 st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-st.subheader('Find the burner alert status in your area', divider='rainbow')
+st.subheader('Find the burner alert status in Swansea', divider='rainbow')
 st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
 # Input for postcode
@@ -138,37 +148,40 @@ if postcode:
     # Standardize the postcode input
     standardized_postcode = standardize_postcode(postcode)
     
-    try:
-        lat, lon = get_geocoding_data(standardized_postcode)
-        if lat is not None and lon is not None:
-            pm2_5 = get_air_pollution_data(lat, lon)
-            alert, color = get_alert_level(pm2_5)
-
-            # Display the results
-            st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {standardized_postcode}</h2>", unsafe_allow_html=True)
-            result_class = "result-gray" if color == "gray" else f"result-{color}"
-            st.markdown(f"<div class='result-box {result_class}'>Particle pollution on your street is well below guideline levels. Air quality is not currently unhealthy, although woodburner use may increase levels in your area.</div>", unsafe_allow_html=True)
-
-            # Display the PM2.5 value
-            if pm2_5 is not None:
-                st.markdown(f"<h3 class='sub-title'>PM2.5 Level: {pm2_5} µg/m³</h3>", unsafe_allow_html=True)
+    if any(standardized_postcode.startswith(swansea_code) for swansea_code in swansea_postcodes):
+        try:
+            lat, lon = get_geocoding_data(standardized_postcode)
+            if lat is not None and lon is not None:
+                pm2_5 = get_air_pollution_data(lat, lon)
+                alert, color = get_alert_level(pm2_5)
+                
+                # Display the results
+                st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {standardized_postcode}</h2>", unsafe_allow_html=True)
+                result_class = "result-gray" if color == "gray" else f"result-{color}"
+                st.markdown(f"<div class='result-box {result_class}'>Particle pollution on your street is well below guideline levels. Air quality is not currently unhealthy, although woodburner use may increase levels in your area.</div>", unsafe_allow_html=True)
+                
+                # Display the PM2.5 value
+                if pm2_5 is not None:
+                    st.markdown(f"<h3 class='sub-title'>PM2.5 Level: {pm2_5} µg/m³</h3>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<h3 class='sub-title'>PM2.5 Level: Data not available</h3>", unsafe_allow_html=True)
+                
+                # Display the alert level
+                alert_class = "gray-alert" if color == "gray" else f"{color}-alert"
+                st.markdown(f"<div class='alert-box {alert_class}'>{alert}</div>", unsafe_allow_html=True)
+                
+                # Display color-coded alert levels
+                st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
+                            f"<div style='background-color:green; padding: 10px; border-radius: 5px;'>0-5</div>"
+                            f"<div style='background-color:yellow; padding: 10px; border-radius: 5px;'>5-15</div>"
+                            f"<div style='background-color:red; padding: 10px; border-radius: 5px;'>>15</div>"
+                            f"</div>", unsafe_allow_html=True)
             else:
-                st.markdown(f"<h3 class='sub-title'>PM2.5 Level: Data not available</h3>", unsafe_allow_html=True)
-
-            # Display the alert level
-            alert_class = "gray-alert" if color == "gray" else f"{color}-alert"
-            st.markdown(f"<div class='alert-box {alert_class}'>{alert}</div>", unsafe_allow_html=True)
-
-            # Display color-coded alert levels
-            st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
-                        f"<div style='background-color:green; padding: 10px; border-radius: 5px;'>0-5</div>"
-                        f"<div style='background-color:yellow; padding: 10px; border-radius: 5px;'>5-15</div>"
-                        f"<div style='background-color:red; padding: 10px; border-radius: 5px;'>>15</div>"
-                        f"</div>", unsafe_allow_html=True)
-        else:
-            st.error("Could not get geolocation data for the provided postcode.")
-    except Exception as e:
-        st.error("Failed to retrieve data. Please check the postcode and API key.")
-        st.error(str(e))
+                st.error("Could not get geolocation data for the provided postcode.")
+        except Exception as e:
+            st.error("Failed to retrieve data. Please check the postcode and API key.")
+            st.error(str(e))
+    else:
+        st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
 else:
-     st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in your area. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True) 
