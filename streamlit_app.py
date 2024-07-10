@@ -170,5 +170,4 @@ if postcode:
         st.error("Failed to retrieve data. Please check the postcode and API key.")
         st.error(str(e))
 else:
-    st.markdown("<h3 class='instructions'>Please enter your postcode to check the burner alert status.</h3>", unsafe_allow_html=True)
-    st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in your area. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
+     st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in your area. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
