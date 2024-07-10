@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # Hardcoded API key (replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key)
-API_KEY = 'f598d541095a0ef824f1734f32b6f985'
+API_KEY = 'YOUR_API_KEY'
 
 # Function to get air pollution data from OpenWeatherMap
 def get_air_pollution_data(lat, lon, api_key=API_KEY):
@@ -51,6 +51,34 @@ if postcode:
 
         # Display the PM2.5 value
         st.markdown(f"<h3 style='color: red;'>PM2.5 Level: {pm2_5} µg/m³</h3>")
+                # Display the alert level (continued) 
+        st.markdown(f"<h2 style='text-align: center; color: {color}; border: 2px solid {color}; border-radius: 10px; padding: 10px;'>{alert}</h2>", unsafe_allow_html=True)
 
-        # Display the alert level
-        st.markdown(f"<h2 style='text-align: center; color: {color}; border: 2px solid {color}; border-radius: 10px; padding: 10px;'>{alert}</h2>", unsafe_allow 
+        # Display color-coded alert levels
+        st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
+                    f"<div style='background-color:green; padding: 10px; border-radius: 5px;'>0-5</div>"
+                    f"<div style='background-color:yellow; padding: 10px; border-radius: 5px;'>5-15</div>"
+                    f"<div style='background-color:red; padding: 10px; border-radius: 5px;'>>15</div>"
+                    f"</div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error("Failed to retrieve data. Please check the postcode and API key.")
+        st.error(str(e))
+else:
+    st.markdown("<h3 style='text-align: center; color: black;'>Find the burner alert status in your area</h3>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: black;'>Enter your postcode to get the current air quality status for your area.</p>", unsafe_allow_html=True)
+
+    st.markdown("""
+        <style>
+        .css-1aumxhk {
+            background-color: red !important;
+            color: white !important;
+            border: 2px solid green !important;
+            border-radius: 5px !important;
+        }
+        .css-1aumxhk:hover {
+            background-color: darkred !important;
+            border: 2px solid darkgreen !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
