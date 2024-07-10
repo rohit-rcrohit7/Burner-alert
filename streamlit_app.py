@@ -184,4 +184,4 @@ if postcode:
     else:
         st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
 else:
-    st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True) 
+    st.markdown("<div class='info-box'>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True) 
