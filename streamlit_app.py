@@ -48,7 +48,7 @@ def get_alert_level(pm2_5):
         return "Burner Alert", "red"
 
 # Streamlit app title
-st.markdown("<h1 style='text-align: center; color: white; background-color: red; border: 5px solid green; border-radius: 10px; padding: 10px;'>Burner Alert</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: white; background-color: red; border: 5px solid green; border-radius: 10px; padding: 10px;'>Swansea Burner Alert</h1>", unsafe_allow_html=True)
 
 # Input for postcode
 postcode = st.text_input('Enter your postcode:')
