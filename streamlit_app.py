@@ -112,12 +112,15 @@ st.markdown("""
         margin-top: 20px;
     }
     .info-box {
-        background-color: lightgray;
-        border: 2px solid black;
-        border-radius: 5px;
-        padding: 10px;
+        background-color: #f0f0f0;
+        border: 2px solid #cccccc;
+        border-radius: 15px;
+        padding: 20px;
         text-align: center;
         margin-top: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+        color: #333;
     }
     </style>
 """, unsafe_allow_html=True)
