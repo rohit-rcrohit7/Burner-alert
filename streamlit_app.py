@@ -49,13 +49,13 @@ def get_geocoding_data(postcode, api_key=API_KEY):
 # Function to determine the alert level
 def get_alert_level(pm2_5):
     if pm2_5 is None:
-        return "No Data", "gray"
+        return "No Data", "gray", "Data not available."
     elif pm2_5 <= 5:
-        return "No Alert", "green"
+        return "No Alert", "green", "Particle pollution on your street is well below guideline levels. Air quality is not currently unhealthy, although woodburner use may increase levels in your area."
     elif 5 < pm2_5 <= 15:
-        return "Advisory", "yellow"
+        return "Advisory", "yellow", "Moderate particle pollution detected. Consider limiting woodburner use to reduce potential health impacts."
     else:
-        return "Burner Alert", "red"
+        return "Burner Alert", "red", "High particle pollution detected. Avoid using woodburners to prevent adverse health effects."
 
 # Custom CSS for Swansea-themed styling
 st.markdown("""
@@ -82,6 +82,7 @@ st.markdown("""
         border-radius: 5px;
         padding: 10px;
         margin: 10px;
+        text-align: center;
     }
     .result-green {
         border-color: green;
@@ -99,27 +100,11 @@ st.markdown("""
         border-color: gray;
         color: gray;
     }
-    .alert-box {
-        text-align: center;
-        padding: 10px;
-        margin-top: 20px;
+    .alert-status {
+        font-weight: bold;
     }
-    .green-alert {
-        border: 2px solid green;
-        color: green;
-    }
-    .yellow-alert {
-        border: 2px solid orange;
-        color: orange;
-        color: black; /* Added to make the text more visible */
-    }
-    .red-alert {
-        border: 2px solid red;
-        color: red;
-    }
-    .gray-alert {
-        border: 2px solid gray;
-        color: gray;
+    .alert-text {
+        font-weight: normal;
     }
     .instructions {
         text-align: center;
@@ -139,7 +124,8 @@ st.markdown("""
 
 # Streamlit app title
 st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove', divider = 'rainbow')
+#st.subheader('Find the burner alert status in Swansea', divider='rainbow')
+st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
 # Input for postcode
 postcode = st.text_input('Enter your postcode:')
@@ -153,22 +139,21 @@ if postcode:
             lat, lon = get_geocoding_data(standardized_postcode)
             if lat is not None and lon is not None:
                 pm2_5 = get_air_pollution_data(lat, lon)
-                alert, color = get_alert_level(pm2_5)
+                alert, color, alert_text = get_alert_level(pm2_5)
                 
                 # Display the results
                 st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {standardized_postcode}</h2>", unsafe_allow_html=True)
                 result_class = "result-gray" if color == "gray" else f"result-{color}"
-                st.markdown(f"<div class='result-box {result_class}'>Particle pollution on your street is well below guideline levels. Air quality is not currently unhealthy, although woodburner use may increase levels in your area.</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='result-box {result_class}'>"
+                            f"<div class='alert-status'>{alert}</div>"
+                            f"<div class='alert-text'>{alert_text}</div>"
+                            f"</div>", unsafe_allow_html=True)
                 
                 # Display the PM2.5 value
                 if pm2_5 is not None:
                     st.markdown(f"<h3 class='sub-title'>PM2.5 Level: {pm2_5} µg/m³</h3>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<h3 class='sub-title'>PM2.5 Level: Data not available</h3>", unsafe_allow_html=True)
-                
-                # Display the alert level
-                alert_class = "gray-alert" if color == "gray" else f"{color}-alert"
-                st.markdown(f"<div class='alert-box {alert_class}'>{alert}</div>", unsafe_allow_html=True)
                 
                 # Display color-coded alert levels
                 st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
