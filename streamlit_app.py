@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # Hardcoded API key (replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key)
-API_KEY = 'YOUR_API_KEY'
+API_KEY = 'f598d541095a0ef824f1734f32b6f985'
 
 # Function to get air pollution data from OpenWeatherMap
 def get_air_pollution_data(lat, lon, api_key=API_KEY):
