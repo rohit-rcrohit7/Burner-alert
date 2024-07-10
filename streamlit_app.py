@@ -112,8 +112,8 @@ st.markdown("""
         margin-top: 20px;
     }
     .info-box {
-        background-color: #f0f0f0;
-        border: 2px solid #cccccc;
+        background-color: #f8f4e3; /* Light beige */
+        border: 2px solid #dcd2a8; /* Matching border color */
         border-radius: 15px;
         padding: 20px;
         text-align: center;
