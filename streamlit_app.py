@@ -128,7 +128,7 @@ st.markdown("""
 # Streamlit app title
 st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
 st.subheader('Find the burner alert status in your area', divider='rainbow')
-st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove :sunglasses:')
+st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
 # Input for postcode
 postcode = st.text_input('Enter your postcode:')
