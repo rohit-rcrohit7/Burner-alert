@@ -2,7 +2,8 @@ import streamlit as st
 import requests
 
 # Hardcoded API key (replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key)
-API_KEY = '17c307d080e491d0d222ad4e6c8a309d'
+os.environ['API_KEY'] = st.secrets['API_KEY']
+
 
 # Function to standardize the postcode
 def standardize_postcode(postcode):
