@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import requests
 import os
 
@@ -64,7 +64,7 @@ st.markdown("""
         text-align: center;
         color: white;
         background-color: red;
-                border: 5px solid green; 
+        border: 5px solid green;
         border-radius: 10px;
         padding: 10px;
     }
@@ -89,15 +89,15 @@ st.markdown("""
     }
     .result-yellow {
         border-color: orange;
-        color: orange.
+        color: orange;
     }
     .result-red {
         border-color: red;
-        color: red.
+        color: red;
     }
     .result-gray {
         border-color: gray;
-        color: gray.
+        color: gray;
     }
     .alert-box {
         text-align: center;
@@ -111,15 +111,15 @@ st.markdown("""
     .yellow-alert {
         border: 2px solid orange;
         color: orange;
-        colour: black;
+        color: black; /* Added to make the text more visible */
     }
     .red-alert {
         border: 2px solid red;
-        color: red.
+        color: red;
     }
     .gray-alert {
         border: 2px solid gray;
-        color: gray.
+        color: gray;
     }
     .instructions {
         text-align: center;
@@ -139,7 +139,8 @@ st.markdown("""
 
 # Streamlit app title
 st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove')
+st.subheader('Find the burner alert status in Swansea', divider='rainbow')
+st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
 # Input for postcode
 postcode = st.text_input('Enter your postcode:')
@@ -172,9 +173,9 @@ if postcode:
                 
                 # Display color-coded alert levels
                 st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
-                            f"<div style='background-color:green; padding: 10px; border-radius: 5px;'>0-5</div>"
-                            f"<div style='background-color:yellow; padding: 10px; border-radius: 5px;'>5-15</div>"
-                            f"<div style='background-color:red; padding: 10px; border-radius: 5px;'>>15</div>"
+                            f"<div style='background-color:green; padding: 10px; border-radius: 5px; color:white;'>0-5</div>"
+                            f"<div style='background-color:yellow; padding: 10px; border-radius: 5px; color:black;'>5-15</div>"
+                            f"<div style='background-color:red; padding: 10px; border-radius: 5px; color:white;'>>15</div>"
                             f"</div>", unsafe_allow_html=True)
             else:
                 st.error("Could not get geolocation data for the provided postcode.")
@@ -184,4 +185,4 @@ if postcode:
     else:
         st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
 else:
-    st.markdown("<div class='info-box'>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True) 
+    st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
