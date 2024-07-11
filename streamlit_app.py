@@ -135,7 +135,20 @@ page = st.sidebar.selectbox("Select a page", ["Burner Alert Status", "Subscribe 
 
 if page == "Burner Alert Status":
     st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-    st.markdown(''':red[Enter your postcode] to determine if it is safe to use your wood stove''')
+
+# Add custom CSS for spacing
+st.markdown("""
+    <style>
+    .spacer {
+        margin-top: 20px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Spacer for gap
+st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
+
+
    
 
     # Input for postcode
