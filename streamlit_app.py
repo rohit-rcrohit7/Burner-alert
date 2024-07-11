@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import requests
 import os
 import pandas as pd
@@ -135,9 +135,11 @@ page = st.sidebar.selectbox("Select a page", ["Burner Alert Status", "Subscribe 
 
 if page == "Burner Alert Status":
     st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-   
+    st.subheader('Find the burner alert status in Swansea', divider='rainbow')
+    st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
+
     # Input for postcode
-    postcode = st.text_input(':red[Enter your postcode] to determine if it is safe to use your wood stove:')
+    postcode = st.text_input('Enter your postcode:')
 
     if postcode:
         # Standardize the postcode input
@@ -178,7 +180,7 @@ if page == "Burner Alert Status":
         else:
             st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
     else:
-        st.markdown("<div class='info-box'>Burner Alert is a research tool codeveloped by University of Nottingham and University of Swansea that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
 
 elif page == "Subscribe to Alerts":
     st.markdown("<h1 class='main-title'>Subscribe to Burner Alerts</h1>", unsafe_allow_html=True)
@@ -186,12 +188,20 @@ elif page == "Subscribe to Alerts":
 
     # Input for subscription
     name = st.text_input('Enter your name:')
-    email = st.text_input('Enter your email:')
+    email = st.text_input('Enter your email:') 
+    sub_postcode = st.text_input('Enter the postcode you want alerts for:')
+
     if st.button('Subscribe'):
-        if name and email:
-            subscription = {'name': name, 'email': email, 'subscribed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-            subscriptions = pd.DataFrame([subscription])
-            subscriptions.to_csv('subscriptions.csv', mode='a', header=False, index=False)
-            st.success('You have successfully subscribed to Burner Alerts!')
+        if name and email and sub_postcode:
+            # Standardize the postcode input
+            standardized_sub_postcode = standardize_postcode(sub_postcode)
+            if any(standardized_sub_postcode.startswith(swansea_code) for swansea_code in swansea_postcodes):
+                subscription = {'name': name, 'email': email, 'postcode': standardized_sub_postcode, 'subscribed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+                subscriptions = pd.DataFrame([subscription])
+                subscriptions.to_csv('subscriptions.csv', mode='a', header=False, index=False)
+                st.success('You have successfully subscribed to Burner Alerts!')
+            else:
+                st.error('The provided postcode is not within Swansea. Please enter a valid Swansea postcode.')
         else:
-            st.error('Please enter both your name and email.')
+            st.error('Please enter your name, email, and the postcode you want alerts for.')
+
