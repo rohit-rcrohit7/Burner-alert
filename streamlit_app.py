@@ -44,6 +44,8 @@ def get_geocoding_data(postcode, api_key=API_KEY):
     data = response.json()
     if 'lat' in data and 'lon' in data and 'name' in data:
         return data['lat'], data['lon'], data['name']
+    elif 'lat' in data and 'lon' in data:
+        return data['lat'], data['lon'], postcode  # Fallback to postcode if place name is not available
     else:
         st.error("Failed to retrieve geocoding data. Please check the postcode.")
         return None, None, None
@@ -127,65 +129,71 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Streamlit app title
-st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-st.subheader('Find the burner alert status in Swansea', divider='rainbow')
-st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
+# Sidebar for navigation
+st.sidebar.title("Navigation")
+page = st.sidebar.selectbox("Select a page", ["Burner Alert Status", "Subscribe to Alerts"])
 
-# Input for postcode
-postcode = st.text_input('Enter your postcode:')
+if page == "Burner Alert Status":
+    st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
+    st.subheader('Find the burner alert status in Swansea', divider='rainbow')
+    st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
-# Input for subscription
-st.markdown("<h2 class='sub-title'>Subscribe to Burner Alerts</h2>", unsafe_allow_html=True)
-name = st.text_input('Enter your name:')
-email = st.text_input('Enter your email:')
+    # Input for postcode
+    postcode = st.text_input('Enter your postcode:')
 
-if st.button('Subscribe'):
-    if name and email:
-        subscription = {'name': name, 'email': email, 'subscribed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        subscriptions = pd.DataFrame([subscription])
-        subscriptions.to_csv('subscriptions.csv', mode='a', header=False, index=False)
-        st.success('You have successfully subscribed to Burner Alerts!')
-    else:
-        st.error('Please enter both your name and email.')
-
-if postcode:
-    # Standardize the postcode input
-    standardized_postcode = standardize_postcode(postcode)
-    
-    if any(standardized_postcode.startswith(swansea_code) for swansea_code in swansea_postcodes):
-        try:
-            lat, lon, place_name = get_geocoding_data(standardized_postcode)
-            if lat is not None and lon is not None:
-                pm2_5 = get_air_pollution_data(lat, lon)
-                alert, color, alert_text = get_alert_level(pm2_5)
-                
-                # Display the results
-                st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {place_name} ({standardized_postcode})</h2>", unsafe_allow_html=True)
-                result_class = "result-gray" if color == "gray" else f"result-{color}"
-                st.markdown(f"<div class='result-box {result_class}'>"
-                            f"<div class='alert-status'>{alert}</div>"
-                            f"<div class='alert-text'>{alert_text}</div>"
-                            f"</div>", unsafe_allow_html=True)
-                
-                # Display the PM2.5 value
-                if pm2_5 is not None:
-                    st.markdown(f"<h3 class='sub-title'>PM2.5 Level: {pm2_5} µg/m³</h3>", unsafe_allow_html=True)
+    if postcode:
+        # Standardize the postcode input
+        standardized_postcode = standardize_postcode(postcode)
+        
+        if any(standardized_postcode.startswith(swansea_code) for swansea_code in swansea_postcodes):
+            try:
+                lat, lon, place_name = get_geocoding_data(standardized_postcode)
+                if lat is not None and lon is not None:
+                    pm2_5 = get_air_pollution_data(lat, lon)
+                    alert, color, alert_text = get_alert_level(pm2_5)
+                    
+                    # Display the results
+                    st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {place_name} ({standardized_postcode})</h2>", unsafe_allow_html=True)
+                    result_class = "result-gray" if color == "gray" else f"result-{color}"
+                    st.markdown(f"<div class='result-box {result_class}'>"
+                                f"<div class='alert-status'>{alert}</div>"
+                                f"<div class='alert-text'>{alert_text}</div>"
+                                f"</div>", unsafe_allow_html=True)
+                    
+                    # Display the PM2.5 value
+                    if pm2_5 is not None:
+                        st.markdown(f"<h3 class='sub-title'>PM2.5 Level: {pm2_5} µg/m³</h3>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<h3 class='sub-title'>PM2.5 Level: Data not available</h3>", unsafe_allow_html=True)
+                    
+                    # Display color-coded alert levels
+                    st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
+                                f"<div style='background-color:green; padding: 10px; border-radius: 5px; color:white;'>0-5</div>"
+                                f"<div style='background-color:yellow; padding: 10px; border-radius: 5px; color:black;'>5-15</div>"
+                                f"<div style='background-color:red; padding: 10px; border-radius: 5px; color:white;'>>15</div>"
+                                f"</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"<h3 class='sub-title'>PM2.5 Level: Data not available</h3>", unsafe_allow_html=True)
-                
-                # Display color-coded alert levels
-                st.markdown(f"<div style='display: flex; justify-content: space-around;'>"
-                            f"<div style='background-color:green; padding: 10px; border-radius: 5px; color:white;'>0-5</div>"
-                            f"<div style='background-color:yellow; padding: 10px; border-radius: 5px; color:black;'>5-15</div>"
-                            f"<div style='background-color:red; padding: 10px; border-radius: 5px; color:white;'>>15</div>"
-                            f"</div>", unsafe_allow_html=True)
-            else:
-                st.error("Could not get geolocation data for the provided postcode.")
-        except Exception as e:
-            st.error("Failed to retrieve data. Please check the postcode and API key.")
-            st.error(str(e))
+                    st.error("Could not get geolocation data for the provided postcode.")
+            except Exception as e:
+                st.error("Failed to retrieve data. Please check the postcode and API key.")
+                st.error(str(e))
+        else:
+            st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
     else:
-        st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
-else:
-    st.markdown("<div class='info-box'>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
+
+elif page == "Subscribe to Alerts":
+    st.markdown("<h1 class='main-title'>Subscribe to Burner Alerts</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 class='sub-title'>Subscribe to receive burner alerts via email</h2>", unsafe_allow_html=True)
+
+    # Input for subscription
+    name = st.text_input('Enter your name:')
+    email = st.text_input('Enter your email:')
+    if st.button('Subscribe'):
+        if name and email:
+            subscription = {'name': name, 'email': email, 'subscribed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+            subscriptions = pd.DataFrame([subscription])
+            subscriptions.to_csv('subscriptions.csv', mode='a', header=False, index=False)
+            st.success('You have successfully subscribed to Burner Alerts!')
+        else:
+            st.error('Please enter both your name and email.')
