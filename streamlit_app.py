@@ -154,7 +154,7 @@ if page == "Burner Alert Status":
     # Input for postcode
     postcode = st.text_input(':red[Enter your postcode] to determine if it is safe to use your wood stove')
     submit_postcode = st.button('Submit')
-    st.video = ('https://www.youtube.com/watch?v=egxIwox4RNs')
+    st.video('https://www.youtube.com/watch?v=egxIwox4RNs')
 
     if submit_postcode and postcode:
         # Standardize the postcode input
