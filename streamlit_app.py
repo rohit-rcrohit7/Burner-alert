@@ -140,8 +140,9 @@ if page == "Burner Alert Status":
 
     # Input for postcode
     postcode = st.text_input('Swansea Postcode')
+    submit_postcode = st.button('Submit')
 
-    if postcode:
+    if submit_postcode and postcode:
         # Standardize the postcode input
         standardized_postcode = standardize_postcode(postcode)
         
