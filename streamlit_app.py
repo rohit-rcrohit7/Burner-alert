@@ -135,8 +135,8 @@ page = st.sidebar.selectbox("Select a page", ["Burner Alert Status", "Subscribe 
 
 if page == "Burner Alert Status":
     st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-    st.subheader('Find the burner alert status in Swansea', divider='rainbow')
-    st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
+    st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove', divider='rainbow')
+   
 
     # Input for postcode
     postcode = st.text_input('Enter your postcode:')
@@ -180,7 +180,7 @@ if page == "Burner Alert Status":
         else:
             st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
     else:
-        st.markdown("<div class='info-box'>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='info-box'>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
 
 elif page == "Subscribe to Alerts":
     st.markdown("<h1 class='main-title'>Subscribe to Burner Alerts</h1>", unsafe_allow_html=True)
