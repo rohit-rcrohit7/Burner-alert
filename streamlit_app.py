@@ -126,7 +126,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Streamlit app title
-st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-title'>Swansea Burner Alert</h1>", unsafe_allow_html=True)
 #st.subheader('Find the burner alert status in Swansea', divider='rainbow')
 st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
@@ -174,6 +174,6 @@ if postcode:
 else:
     st.markdown("<div class='info-box'>"
             "<h2>Welcome to Burner Alert</h2>"
-            "<p>Burner Alert is a service that helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea.</p>"
+            "<p>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea.</p>"
             "<p>Simply enter your postcode above to get started.</p>"
             "</div>", unsafe_allow_html=True)
