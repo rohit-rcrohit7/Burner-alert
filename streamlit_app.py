@@ -147,7 +147,7 @@ if page == "Burner Alert Status":
     
     # Spacer for gap
     st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
-    st.video('https://www.youtube.com/watch?v=egxIwox4RNs')
+    st.video("https://www.youtube.com/watch?v=egxIwox4RNs")
 
 
    
