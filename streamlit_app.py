@@ -152,7 +152,7 @@ if page == "Burner Alert Status":
    
 
     # Input for postcode
-    postcode = st.text_input('Swansea Postcode')
+    postcode = st.text_input(':red[Enter your postcode] to determine if it is safe to use your wood stove')
     submit_postcode = st.button('Submit')
 
     if submit_postcode and postcode:
