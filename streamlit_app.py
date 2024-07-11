@@ -169,7 +169,7 @@ if page == "Burner Alert Status":
                     alert, color, alert_text = get_alert_level(pm2_5)
                     
                     # Display the results
-                    st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {place_name} ({standardized_postcode})</h2>", unsafe_allow_html=True)
+                    st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {place_name}</h2>", unsafe_allow_html=True)
                     result_class = "result-gray" if color == "gray" else f"result-{color}"
                     st.markdown(f"<div class='result-box {result_class}'>"
                                 f"<div class='alert-status'>{alert}</div>"
