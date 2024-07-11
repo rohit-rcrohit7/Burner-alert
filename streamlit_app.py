@@ -135,7 +135,7 @@ page = st.sidebar.selectbox("Select a page", ["Burner Alert Status", "Subscribe 
 
 if page == "Burner Alert Status":
     st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-    st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove', divider='rainbow')
+    st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove')
    
 
     # Input for postcode
