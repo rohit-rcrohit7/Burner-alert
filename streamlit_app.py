@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
 import os
+import pandas as pd
+from datetime import datetime
 
-# Hardcoded API key (replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key)
+# Replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key
 os.environ['API_KEY'] = st.secrets['API_KEY']
 API_KEY = os.getenv('API_KEY')
 
@@ -35,16 +37,16 @@ def get_air_pollution_data(lat, lon, api_key=API_KEY):
         st.error("Failed to retrieve air pollution data.")
         return None
 
-# Function to get geocoding data to convert postcode to latitude and longitude
+# Function to get geocoding data to convert postcode to latitude, longitude, and place name
 def get_geocoding_data(postcode, api_key=API_KEY):
     url = f"http://api.openweathermap.org/geo/1.0/zip?zip={postcode},GB&appid={api_key}"
     response = requests.get(url)
     data = response.json()
-    if 'lat' in data and 'lon' in data:
-        return data['lat'], data['lon']
+    if 'lat' in data and 'lon' in data and 'name' in data:
+        return data['lat'], data['lon'], data['name']
     else:
         st.error("Failed to retrieve geocoding data. Please check the postcode.")
-        return None, None
+        return None, None, None
 
 # Function to determine the alert level
 def get_alert_level(pm2_5):
@@ -127,11 +129,25 @@ st.markdown("""
 
 # Streamlit app title
 st.markdown("<h1 class='main-title'>Burner Alert</h1>", unsafe_allow_html=True)
-#st.subheader('Find the burner alert status in Swansea', divider='rainbow')
-st.subheader(':red[Enter your postcode] to determine if it is safe to use your wood stove')
+st.subheader('Find the burner alert status in Swansea', divider='rainbow')
+st.write(':red[Enter your postcode] to determine if it is safe to use your wood stove')
 
 # Input for postcode
 postcode = st.text_input('Enter your postcode:')
+
+# Input for subscription
+st.markdown("<h2 class='sub-title'>Subscribe to Burner Alerts</h2>", unsafe_allow_html=True)
+name = st.text_input('Enter your name:')
+email = st.text_input('Enter your email:')
+
+if st.button('Subscribe'):
+    if name and email:
+        subscription = {'name': name, 'email': email, 'subscribed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        subscriptions = pd.DataFrame([subscription])
+        subscriptions.to_csv('subscriptions.csv', mode='a', header=False, index=False)
+        st.success('You have successfully subscribed to Burner Alerts!')
+    else:
+        st.error('Please enter both your name and email.')
 
 if postcode:
     # Standardize the postcode input
@@ -139,13 +155,13 @@ if postcode:
     
     if any(standardized_postcode.startswith(swansea_code) for swansea_code in swansea_postcodes):
         try:
-            lat, lon = get_geocoding_data(standardized_postcode)
+            lat, lon, place_name = get_geocoding_data(standardized_postcode)
             if lat is not None and lon is not None:
                 pm2_5 = get_air_pollution_data(lat, lon)
                 alert, color, alert_text = get_alert_level(pm2_5)
                 
                 # Display the results
-                st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {standardized_postcode}</h2>", unsafe_allow_html=True)
+                st.markdown(f"<h2 class='sub-title'>Current Burner Alert Guideline for: {place_name} ({standardized_postcode})</h2>", unsafe_allow_html=True)
                 result_class = "result-gray" if color == "gray" else f"result-{color}"
                 st.markdown(f"<div class='result-box {result_class}'>"
                             f"<div class='alert-status'>{alert}</div>"
@@ -172,8 +188,4 @@ if postcode:
     else:
         st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
 else:
-    st.markdown("<div class='info-box'>"
-            "<h2>Welcome to Burner Alert</h2>"
-            "<p>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea.</p>"
-            "<p>Simply enter your postcode above to get started.</p>"
-            "</div>", unsafe_allow_html=True)
+    st.markdown("<div class='info-box'>Burner Alert helps you determine if it is safe to use your wood stove based on the current PM2.5 air pollution levels in Swansea. Simply enter your postcode above to get started.</div>", unsafe_allow_html=True)
