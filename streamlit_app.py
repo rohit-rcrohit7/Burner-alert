@@ -139,7 +139,7 @@ if page == "Burner Alert Status":
    
 
     # Input for postcode
-    postcode = st.text_input('Enter your postcode:')
+    postcode = st.text_input()
 
     if postcode:
         # Standardize the postcode input
