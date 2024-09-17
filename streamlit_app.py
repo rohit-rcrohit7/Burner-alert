@@ -34,16 +34,16 @@ def get_geocoding_data(postcode):
         data = response.json()
         if data['results']:
             for result in data['results']:
-                if 'POSTCODE' in result['GAZETTEER_ENTRY']:
+                if result['GAZETTEER_ENTRY']['LOCAL_TYPE'] == 'Postcode':
                     lat = result['GAZETTEER_ENTRY']['GEOMETRY_Y']
                     lon = result['GAZETTEER_ENTRY']['GEOMETRY_X']
-                    place_name = result['GAZETTEER_ENTRY'].get('DISTRICT_BOROUGH', 'Unknown')
+                    place_name = result['GAZETTEER_ENTRY'].get('POPULATED_PLACE', 'Unknown')
                     return lat, lon, place_name
             
-            st.error(f"Postcode {postcode} not found in the results. API response: {data}")
+            st.error(f"Postcode {postcode} not found in the results.")
             return None, None, None
         else:
-            st.error(f"No results found for the postcode {postcode}. API response: {data}")
+            st.error(f"No results found for the postcode {postcode}.")
             return None, None, None
     else:
         st.error(f"Failed to retrieve geocoding data. Status code: {response.status_code}")
@@ -166,7 +166,7 @@ if page == "Burner Alert Status":
                 st.info(f"Attempting to geocode postcode: {standardized_postcode}")
                 lat, lon, place_name = get_geocoding_data(standardized_postcode)
                 if lat is not None and lon is not None:
-                    st.success(f"Geocoding successful. Latitude: {lat}, Longitude: {lon}, Place: {place_name}")
+                    st.success(f"Geocoding successful. Location: {place_name}")
                     air_quality_data = get_air_quality_data(lat, lon)
                     if air_quality_data:
                         pm2_5 = air_quality_data['particulateMatter25']
