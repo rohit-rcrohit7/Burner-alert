@@ -24,24 +24,30 @@ def standardize_postcode(postcode):
         return postcode
 
 def get_geocoding_data(postcode):
-    url = f"https://api.os.uk/search/names/v1/find?query={postcode}&key={OS_API_KEY}"
+    # Remove spaces and convert to uppercase
+    formatted_postcode = postcode.replace(" ", "").upper()
+    
+    url = f"https://api.os.uk/search/names/v1/find?query={formatted_postcode}&key={OS_API_KEY}"
     response = requests.get(url)
+    
     if response.status_code == 200:
         data = response.json()
         if data['results']:
             for result in data['results']:
-                if result['GAZETTEER_ENTRY']['TYPE'] == 'Postcode':
+                if 'POSTCODE' in result['GAZETTEER_ENTRY']:
                     lat = result['GAZETTEER_ENTRY']['GEOMETRY_Y']
                     lon = result['GAZETTEER_ENTRY']['GEOMETRY_X']
                     place_name = result['GAZETTEER_ENTRY'].get('DISTRICT_BOROUGH', 'Unknown')
                     return lat, lon, place_name
-            st.error("Postcode not found.")
+            
+            st.error(f"Postcode {postcode} not found in the results. API response: {data}")
             return None, None, None
         else:
-            st.error("No results found for the given postcode.")
+            st.error(f"No results found for the postcode {postcode}. API response: {data}")
             return None, None, None
     else:
-        st.error("Failed to retrieve geocoding data.")
+        st.error(f"Failed to retrieve geocoding data. Status code: {response.status_code}")
+        st.error(f"API response: {response.text}")
         return None, None, None
 
 def get_air_quality_data(lat, lon):
@@ -59,7 +65,8 @@ def get_air_quality_data(lat, lon):
         data = response.json()
         return data['data']['timelines'][0]['intervals'][0]['values']
     else:
-        st.error("Failed to retrieve air quality data.")
+        st.error(f"Failed to retrieve air quality data. Status code: {response.status_code}")
+        st.error(f"API response: {response.text}")
         return None
 
 def get_alert_level(pm2_5):
@@ -156,8 +163,10 @@ if page == "Burner Alert Status":
         
         if any(standardized_postcode.startswith(swansea_code) for swansea_code in swansea_postcodes):
             try:
+                st.info(f"Attempting to geocode postcode: {standardized_postcode}")
                 lat, lon, place_name = get_geocoding_data(standardized_postcode)
                 if lat is not None and lon is not None:
+                    st.success(f"Geocoding successful. Latitude: {lat}, Longitude: {lon}, Place: {place_name}")
                     air_quality_data = get_air_quality_data(lat, lon)
                     if air_quality_data:
                         pm2_5 = air_quality_data['particulateMatter25']
@@ -182,8 +191,8 @@ if page == "Burner Alert Status":
                 else:
                     st.error("Could not get geolocation data for the provided postcode.")
             except Exception as e:
-                st.error("Failed to retrieve data. Please check the postcode and API key.")
-                st.error(str(e))
+                st.error(f"An error occurred: {str(e)}")
+                st.error("Please check the postcode and try again.")
         else:
             st.error("The provided postcode is not within Swansea. Please enter a valid Swansea postcode.")
     else:
